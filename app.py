@@ -1,14 +1,17 @@
+import os
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
-from .env import secret_key
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
-app,config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_db'
+load_dotenv()
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLACHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = secret_key
+app.config['SECRET_KEY'] = os.getenv('secret_key')
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
@@ -36,7 +39,7 @@ def create_user():
     return redirect(f"/{new_user.id}")
 
 @app.route('/edit-user/<int:user_id>')
-def edit_user(user_id):
+def display_user(user_id):
     """show selected user for edit"""
     user = User.query.get(user_id)
     return render_template('edit-user.html', user=user)
