@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+User Detail Page
+{% endblock %}
+
+{% block content %}
+<img src="{{user.image_url}}" alt="{{user.first_name}} {{user.last_name}} profile picture" id="profile_img">
+<h1>{{user.first_name}} {{user.last_name}}</h1>
+<a href="/edit-user/{{user.id}}">
+    <button id="edit_btn" class="btn">Edit</button>
+</a>
+<a href="/users/{{user.id}}" method="post">
+    <button id="delete_btn" class="btn">Delete</button>
+</a>
+{% endblock %}
