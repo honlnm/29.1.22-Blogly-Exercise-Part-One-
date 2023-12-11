@@ -16,15 +16,27 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+with app.app_context():
+    db.create_all()
+    db.session.commit()
 
 @app.route('/')
+def redirect_to_users():
+    return redirect('/users')
+
+@app.route('/users')
 def list_users():
     """shows list of all users in db"""
     users = User.query.all()
     return render_template('user-listing.html', users=users)
 
+@app.route('/users/new')
+def show_new_user_form():
+    """show new user form"""
+    return render_template('new-user.html')
 
-@app.route('/new-user', methods=["POST"])
+
+@app.route('/users/new', methods=["POST"])
 def create_user():
     """create new user"""
     first_name = request.form["first_name"]
@@ -36,16 +48,16 @@ def create_user():
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect(f"/{new_user.id}")
+    return redirect("/users")
 
-@app.route('/edit-user/<int:user_id>')
+@app.route('/users/<int:user_id>/edit')
 def display_user(user_id):
     """show selected user for edit"""
     user = User.query.get(user_id)
     return render_template('edit-user.html', user=user)
 
 
-@app.route('/edit-user/<int:user_id>', methods=["POST"])
+@app.route('/users/<int:user_id>/edit', methods=["POST"])
 def edit_user(user_id):
     """edit selected user"""
     user = User.query.get(user_id)
@@ -57,12 +69,10 @@ def edit_user(user_id):
     user.last_name = last_name
     user.image_url = image_url
 
-    db.session.add(first_name)
-    db.session.add(last_name)
-    db.session.add(image_url)
+    db.session.add(user)
     db.session.commit()
 
-    return redirect(f'/users/{user_id}')
+    return redirect('/users')
     
 
 @app.route('/users/<int:user_id>')
@@ -71,13 +81,13 @@ def show_user(user_id):
     user = User.query.get_or_404(user_id)
     return render_template("user-detail.html", user=user)
 
-@app.route('/users/<int:user_id>', methods=["POST"])
+@app.route('/users/<int:user_id>/delete')
 def delete_user(user_id):
     """delete selected user"""
-    row = User.query.filter(id=user_id)
+    row = User.query.filter(User.id == user_id)
 
     row.delete()
     db.session.commit()
 
-    return redirect("/")
+    return redirect("/users")
 

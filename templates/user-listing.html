@@ -7,13 +7,15 @@ User Listing
 {% block content %}
 <h1>Users</h1>
 <ul>
-    {% if count({{users}}) > 0 %}
-    {% for user in {{users}} %}
-    <li>{user.name} {user.lastname}</li>
+    {% if users %}
+    {% for user in users %}
+    <a href="/users/{{user.id}}">
+        <li>{{user.first_name}} {{user.last_name}}</li>
+    </a>
     {% endfor %}
     {% endif %}
 </ul>
-<a href="new-user.html">
+<a href="/users/new">
     <button>Add User</button>
 </a>
 {% endblock %}
